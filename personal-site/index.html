@@ -140,7 +140,7 @@
     width: 100%; height: 100%;
     object-fit: cover;
     object-position: center top;
-    filter: brightness(0.62);
+    filter: brightness(0.82);
     transform: scale(1.03);
     transition: transform 8s ease;
   }
@@ -160,10 +160,9 @@
   .hero-content {
     position: relative; z-index: 2;
     width: 100%;
-    padding: 0 5rem 5rem;
-    display: flex; align-items: flex-end; justify-content: space-between;
+    padding: 0 0 4rem;
+    display: flex; align-items: flex-end; justify-content: center;
   }
-
   .hero-text { max-width: 680px; }
 
   .hero-eyebrow {
@@ -180,19 +179,20 @@
 
   .hero-title {
     font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(3.5rem, 7vw, 6.5rem);
+    font-size: clamp(3rem, 8vw, 8rem);
     font-weight: 300;
     color: var(--white);
-    line-height: 0.95;
-    letter-spacing: -0.01em;
-    margin-bottom: 1.5rem;
+    line-height: 1;
+    letter-spacing: 0.18em;
+    text-align: center;
+    text-transform: uppercase;
     opacity: 0;
-    animation: fadeUp 0.9s ease 0.5s forwards;
+    animation: fadeUp 1s ease 0.4s forwards;
   }
 
   .hero-title em {
-    font-style: italic;
-    color: var(--gold-light);
+    font-style: normal;
+    color: var(--white);
   }
 
   .hero-sub {
@@ -1255,29 +1255,7 @@
   >
   <div class="hero-overlay"></div>
   <div class="hero-content">
-    <div class="hero-text">
-      <p class="hero-eyebrow">Baltimore, Maryland</p>
-      <h1 class="hero-title">Chef<br><em>James</em><br>Grill</h1>
-      <p class="hero-sub">CIA-Trained · Executive Pastry Chef · Chocolatier</p>
-      <div class="hero-actions">
-        <a href="#chocolates" class="btn-primary">Shop Chocolates</a>
-        <a href="#gallery" class="btn-secondary">View Work</a>
-      </div>
-    </div>
-    <div class="hero-stats">
-      <div class="hero-stat">
-        <span class="hero-stat-num">10+</span>
-        <span class="hero-stat-label">Years Chocolate</span>
-      </div>
-      <div class="hero-stat">
-        <span class="hero-stat-num">CIA</span>
-        <span class="hero-stat-label">Trained</span>
-      </div>
-      <div class="hero-stat">
-        <span class="hero-stat-num">∞</span>
-        <span class="hero-stat-label">Flavor Obsession</span>
-      </div>
-    </div>
+    <h1 class="hero-title">CHEF JAMES GRILL</h1>
   </div>
 </section>
 
