@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>RWCTC AI — Local Backup</title>
+  <title>RWCTC AI — Chef's Local Brain</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #0f0f0f;
+      background: #0a0a0a;
       color: #e8e8e8;
       height: 100vh;
       display: flex;
@@ -17,174 +17,252 @@
     }
 
     header {
-      padding: 16px 24px;
-      border-bottom: 1px solid #222;
+      padding: 14px 20px;
+      border-bottom: 1px solid #1e1e1e;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: #141414;
+      background: #111;
+      gap: 12px;
+      flex-wrap: wrap;
     }
 
-    header h1 {
-      font-size: 18px;
-      font-weight: 600;
-      color: #fff;
-      letter-spacing: -0.3px;
-    }
+    .header-left { display: flex; align-items: center; gap: 10px; }
+    header h1 { font-size: 16px; font-weight: 700; color: #fff; }
 
-    header span {
-      font-size: 12px;
-      color: #555;
-    }
-
-    #status {
-      font-size: 12px;
-      padding: 4px 10px;
+    .pill {
+      font-size: 11px;
+      padding: 3px 10px;
       border-radius: 20px;
+      border: 1px solid #2a2a2a;
       background: #1a1a1a;
-      border: 1px solid #333;
+      color: #666;
     }
 
+    #status { font-size: 12px; padding: 4px 10px; border-radius: 20px; background: #1a1a1a; border: 1px solid #333; }
     #status.online  { color: #4ade80; border-color: #166534; }
     #status.offline { color: #f87171; border-color: #7f1d1d; }
 
-    #chat {
-      flex: 1;
-      overflow-y: auto;
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
+    .header-right { display: flex; align-items: center; gap: 8px; }
+
+    #model-select {
+      background: #1a1a1a; border: 1px solid #2a2a2a; color: #888;
+      font-size: 12px; padding: 4px 8px; border-radius: 8px; outline: none; cursor: pointer;
     }
 
-    .msg {
-      max-width: 720px;
-      line-height: 1.6;
-      font-size: 15px;
+    button.icon-btn {
+      background: #1a1a1a; border: 1px solid #2a2a2a; color: #666;
+      font-size: 14px; padding: 5px 10px; border-radius: 8px; cursor: pointer;
+      transition: all 0.15s;
     }
+    button.icon-btn:hover { background: #222; color: #ccc; }
+    button.icon-btn.active { background: #1e3a5f; color: #60a5fa; border-color: #1d4ed8; }
+
+    /* System prompt drawer */
+    #system-drawer {
+      background: #111;
+      border-bottom: 1px solid #1e1e1e;
+      padding: 12px 20px;
+      display: none;
+    }
+    #system-drawer.open { display: block; }
+    #system-drawer label { font-size: 11px; color: #555; display: block; margin-bottom: 6px; letter-spacing: 0.05em; text-transform: uppercase; }
+    #system-prompt {
+      width: 100%; background: #0f0f0f; border: 1px solid #2a2a2a; color: #ccc;
+      font-size: 13px; padding: 10px 12px; border-radius: 8px; resize: vertical;
+      font-family: inherit; line-height: 1.5; min-height: 80px; outline: none;
+    }
+    #system-prompt:focus { border-color: #333; }
+
+    /* Chat area */
+    #chat {
+      flex: 1; overflow-y: auto; padding: 20px;
+      display: flex; flex-direction: column; gap: 14px;
+    }
+
+    .msg { max-width: 760px; line-height: 1.65; font-size: 14px; }
 
     .msg.user {
       align-self: flex-end;
-      background: #1e3a5f;
-      color: #e0f0ff;
-      padding: 12px 16px;
-      border-radius: 18px 18px 4px 18px;
+      background: #1e3a5f; color: #e0f0ff;
+      padding: 10px 15px; border-radius: 18px 18px 4px 18px;
     }
 
     .msg.bot {
       align-self: flex-start;
-      background: #1a1a1a;
-      border: 1px solid #2a2a2a;
-      padding: 14px 18px;
-      border-radius: 4px 18px 18px 18px;
+      background: #141414; border: 1px solid #222;
+      padding: 14px 18px; border-radius: 4px 18px 18px 18px;
       white-space: pre-wrap;
     }
 
-    .msg.bot.thinking {
-      color: #555;
-      font-style: italic;
-      border-color: #1f1f1f;
+    .msg.bot.thinking { color: #444; font-style: italic; border-color: #1a1a1a; }
+
+    .msg-meta { font-size: 10px; color: #333; margin-top: 5px; padding-left: 4px; }
+
+    /* Tool result chips */
+    .tool-chip {
+      display: inline-block; font-size: 11px; padding: 2px 8px;
+      background: #1a2a1a; border: 1px solid #1e3a1e; color: #4ade80;
+      border-radius: 10px; margin-bottom: 6px;
     }
 
+    /* Footer */
     footer {
-      padding: 16px 24px;
-      border-top: 1px solid #222;
-      background: #141414;
-      display: flex;
-      gap: 10px;
+      padding: 12px 20px; border-top: 1px solid #1e1e1e;
+      background: #111; display: flex; gap: 8px; align-items: flex-end;
     }
+
+    .footer-tools { display: flex; gap: 6px; align-items: center; }
 
     #input {
-      flex: 1;
-      background: #1e1e1e;
-      border: 1px solid #333;
-      border-radius: 12px;
-      color: #e8e8e8;
-      font-size: 15px;
-      padding: 12px 16px;
-      resize: none;
-      outline: none;
-      line-height: 1.5;
-      max-height: 140px;
-      font-family: inherit;
+      flex: 1; background: #1a1a1a; border: 1px solid #2a2a2a;
+      border-radius: 12px; color: #e8e8e8; font-size: 14px;
+      padding: 11px 15px; resize: none; outline: none;
+      line-height: 1.5; max-height: 140px; font-family: inherit;
     }
-
-    #input:focus { border-color: #444; }
-    #input::placeholder { color: #444; }
+    #input:focus { border-color: #333; }
+    #input::placeholder { color: #333; }
 
     #send {
-      background: #1e3a5f;
-      border: none;
-      border-radius: 12px;
-      color: #60a5fa;
-      font-size: 20px;
-      width: 48px;
-      cursor: pointer;
-      transition: background 0.15s;
+      background: #1e3a5f; border: none; border-radius: 12px;
+      color: #60a5fa; font-size: 18px; width: 44px; height: 44px;
+      cursor: pointer; transition: background 0.15s; flex-shrink: 0;
     }
-
     #send:hover { background: #1d4ed8; color: #fff; }
-    #send:disabled { opacity: 0.3; cursor: not-allowed; }
+    #send:disabled { opacity: 0.25; cursor: not-allowed; }
 
-    .model-tag {
+    /* File upload */
+    #file-input { display: none; }
+    #file-label {
+      cursor: pointer; background: #1a1a1a; border: 1px solid #2a2a2a;
+      color: #555; font-size: 13px; padding: 9px 12px;
+      border-radius: 10px; transition: all 0.15s; flex-shrink: 0;
+    }
+    #file-label:hover { color: #ccc; background: #222; }
+
+    #file-name { font-size: 11px; color: #4ade80; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* Memory bank */
+    #memory-bar {
+      display: none;
+      padding: 6px 20px;
+      background: #0f1a0f;
+      border-bottom: 1px solid #1a2a1a;
       font-size: 11px;
-      color: #444;
-      margin-top: 6px;
-      padding-left: 4px;
+      color: #4ade80;
+      gap: 8px;
+      flex-wrap: wrap;
     }
+    #memory-bar.visible { display: flex; }
+    .mem-tag {
+      background: #1a2a1a; border: 1px solid #1e3a1e;
+      padding: 2px 8px; border-radius: 10px; cursor: pointer;
+    }
+    .mem-tag:hover { background: #223a22; }
 
-    #model-select {
-      background: #1a1a1a;
-      border: 1px solid #2a2a2a;
-      color: #888;
-      font-size: 12px;
-      padding: 4px 8px;
-      border-radius: 8px;
-      outline: none;
-      cursor: pointer;
-    }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #222; border-radius: 4px; }
   </style>
 </head>
 <body>
 
 <header>
-  <h1>🔥 RWCTC Local AI</h1>
-  <div style="display:flex;align-items:center;gap:12px;">
+  <div class="header-left">
+    <h1>🔥 Chef's Local AI</h1>
+    <span class="pill">RWCTC Empire</span>
+  </div>
+  <div class="header-right">
     <select id="model-select">
       <option value="llama3.2">llama3.2</option>
       <option value="llama3.2:1b">llama3.2:1b</option>
       <option value="mistral">mistral</option>
     </select>
+    <button class="icon-btn" id="sys-toggle" title="System prompt">🧠</button>
+    <button class="icon-btn" id="mem-toggle" title="Memory">📌</button>
+    <button class="icon-btn" id="clear-btn" title="Clear chat">🗑</button>
     <span id="status">checking…</span>
   </div>
 </header>
 
+<!-- System prompt drawer -->
+<div id="system-drawer" class="open">
+  <label>System Prompt — who Chef's AI is</label>
+  <textarea id="system-prompt">You are Chef's AI — the local intelligence system for Chef James Grill and Redwoodchristmastreeclub LLC (RWCTC). You are Chef's personal operations partner, built on his own machine, answering only to him.
+
+WHO YOU ARE:
+You are direct, witty, and sharp. No fluff, no corporate speak. You think like a CIA-trained pastry chef who also understands tech, strategy, and business. You are loyal to Chef's brand, his vision, and his hustle.
+
+WHO CHEF IS:
+- CIA-trained pastry chef and chocolatier
+- Founder of Redwoodchristmastreeclub LLC (RWCTC)
+- Social media: @chefjamesgrills on all platforms
+- Building his own AI stack, social empire, and food brand simultaneously
+- Based in Sonoma wine country
+- Currently building: local AI backup, GitHub repo (rwctc-empire), Canva content pipeline, brand voice system
+
+YOUR ROLE:
+- Strategy and operations partner
+- Draft content, emails, and social posts in Chef's voice: direct, confident, a little witty
+- Help build and manage RWCTC's brand, products, and tech stack
+- Flag opportunities, suggest solutions, make decisions when Chef delegates
+- Never be sycophantic — be honest, useful, and fast
+
+YOUR LIMITATIONS (be upfront):
+- You are a local model — you cannot browse the internet in real time
+- You do not have memory between sessions unless Chef pastes context
+- You are the backup — Claude is the main brain, but you hold it down when needed
+
+CHEF'S SHORTCUTS:
+- "Officer Pat mode" = full legal/compliance lens
+- "App build mode" = focus on tech architecture and code
+- When Chef says "draft it" = write the full thing, don't outline it
+- When Chef says "quick" = one paragraph max
+
+Always be Chef's AI. Not a generic assistant. His.</textarea>
+</div>
+
+<!-- Memory bar -->
+<div id="memory-bar">
+  <span style="color:#2d5a2d;margin-right:4px;">📌 Memory:</span>
+</div>
+
 <div id="chat"></div>
 
 <footer>
-  <textarea id="input" rows="1" placeholder="Ask anything… (Enter to send, Shift+Enter for new line)"></textarea>
+  <label id="file-label" title="Attach a file">📎
+    <input type="file" id="file-input" accept=".txt,.md,.csv,.json,.html,.js,.py,.pdf" />
+  </label>
+  <span id="file-name"></span>
+  <textarea id="input" rows="1" placeholder="Ask Chef's AI anything…"></textarea>
   <button id="send">↑</button>
 </footer>
 
 <script>
-  const OLLAMA = 'http://localhost:11434';
-  const chat   = document.getElementById('chat');
-  const input  = document.getElementById('input');
-  const sendBtn= document.getElementById('send');
-  const status = document.getElementById('status');
+  const OLLAMA   = 'http://localhost:11434';
+  const chat     = document.getElementById('chat');
+  const input    = document.getElementById('input');
+  const sendBtn  = document.getElementById('send');
+  const statusEl = document.getElementById('status');
   const modelSel = document.getElementById('model-select');
+  const sysProm  = document.getElementById('system-prompt');
+  const sysDrawer= document.getElementById('system-drawer');
+  const memBar   = document.getElementById('memory-bar');
+  const fileInput= document.getElementById('file-input');
+  const fileName = document.getElementById('file-name');
 
-  let history = [];
+  let history    = [];
+  let memory     = JSON.parse(localStorage.getItem('rwctc-memory') || '[]');
+  let attachedText = null;
 
-  // Check if Ollama is alive
+  // ── Status check ──────────────────────────────────────────────
   async function checkStatus() {
     try {
       const r = await fetch(`${OLLAMA}/api/tags`, { signal: AbortSignal.timeout(2000) });
       if (r.ok) {
         const data = await r.json();
-        status.textContent = '● online';
-        status.className = 'online';
-        // Populate model list from what's actually installed
+        statusEl.textContent = '● online';
+        statusEl.className = 'online';
         const models = data.models?.map(m => m.name) || [];
         if (models.length) {
           modelSel.innerHTML = models.map(m =>
@@ -193,33 +271,108 @@
         }
       }
     } catch {
-      status.textContent = '● offline';
-      status.className = 'offline';
+      statusEl.textContent = '● offline';
+      statusEl.className = 'offline';
     }
   }
-
   checkStatus();
-  setInterval(checkStatus, 10000);
+  setInterval(checkStatus, 8000);
 
-  function appendMsg(role, text) {
+  // ── Memory ─────────────────────────────────────────────────────
+  function renderMemory() {
+    if (!memory.length) { memBar.classList.remove('visible'); return; }
+    memBar.classList.add('visible');
+    const tags = memory.map((m, i) =>
+      `<span class="mem-tag" onclick="forgetMemory(${i})" title="Click to remove">🗑 ${m.slice(0,40)}${m.length>40?'…':''}</span>`
+    ).join('');
+    memBar.innerHTML = `<span style="color:#2d5a2d;margin-right:4px;">📌 Memory:</span>${tags}`;
+  }
+  renderMemory();
+
+  function saveMemory(text) {
+    memory.push(text);
+    localStorage.setItem('rwctc-memory', JSON.stringify(memory));
+    renderMemory();
+  }
+  window.forgetMemory = function(i) {
+    memory.splice(i, 1);
+    localStorage.setItem('rwctc-memory', JSON.stringify(memory));
+    renderMemory();
+  };
+
+  // ── File attach ────────────────────────────────────────────────
+  fileInput.addEventListener('change', () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+    fileName.textContent = file.name;
+    const reader = new FileReader();
+    reader.onload = e => { attachedText = e.target.result; };
+    reader.readAsText(file);
+  });
+
+  // ── UI toggles ─────────────────────────────────────────────────
+  document.getElementById('sys-toggle').addEventListener('click', () => {
+    sysDrawer.classList.toggle('open');
+  });
+  document.getElementById('mem-toggle').addEventListener('click', () => {
+    const txt = prompt('Pin something to memory (e.g. "Current focus: Christmas cookie launch"):');
+    if (txt) saveMemory(txt);
+  });
+  document.getElementById('clear-btn').addEventListener('click', () => {
+    if (confirm('Clear chat history?')) {
+      chat.innerHTML = '';
+      history = [];
+    }
+  });
+
+  // ── Append message ─────────────────────────────────────────────
+  function appendMsg(role, text, meta='') {
     const div = document.createElement('div');
     div.className = `msg ${role}`;
     div.textContent = text;
+    if (meta) {
+      const m = document.createElement('div');
+      m.className = 'msg-meta';
+      m.textContent = meta;
+      div.appendChild(m);
+    }
     chat.appendChild(div);
     chat.scrollTop = chat.scrollHeight;
     return div;
   }
 
+  // ── Send ───────────────────────────────────────────────────────
   async function send() {
-    const text = input.value.trim();
-    if (!text) return;
+    let text = input.value.trim();
+    if (!text && !attachedText) return;
+
+    // Append file content to message if attached
+    let fullText = text;
+    if (attachedText) {
+      fullText += `\n\n[Attached file content]:\n${attachedText}`;
+      attachedText = null;
+      fileName.textContent = '';
+      fileInput.value = '';
+    }
 
     input.value = '';
     input.style.height = 'auto';
     sendBtn.disabled = true;
 
-    appendMsg('user', text);
-    history.push({ role: 'user', content: text });
+    appendMsg('user', text || '[file attached]');
+
+    // Build messages array with system prompt + memory context
+    const memContext = memory.length
+      ? `\n\n[Chef's pinned context]:\n${memory.join('\n')}`
+      : '';
+
+    const messages = [
+      { role: 'system', content: sysProm.value + memContext },
+      ...history,
+      { role: 'user', content: fullText }
+    ];
+
+    history.push({ role: 'user', content: fullText });
 
     const thinking = appendMsg('bot thinking', '…');
 
@@ -227,11 +380,7 @@
       const res = await fetch(`${OLLAMA}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: modelSel.value,
-          messages: history,
-          stream: true
-        })
+        body: JSON.stringify({ model: modelSel.value, messages, stream: true })
       });
 
       thinking.className = 'msg bot';
@@ -259,9 +408,18 @@
 
       history.push({ role: 'assistant', content: full });
 
+      // Auto-detect memory-worthy content
+      if (full.toLowerCase().includes('remember') || full.toLowerCase().includes('note that')) {
+        const hint = document.createElement('div');
+        hint.style.cssText = 'font-size:11px;color:#2d5a2d;margin-top:6px;cursor:pointer;';
+        hint.textContent = '📌 Pin this to memory?';
+        hint.onclick = () => { saveMemory(full.slice(0, 120)); hint.remove(); };
+        thinking.appendChild(hint);
+      }
+
     } catch (err) {
       thinking.className = 'msg bot';
-      thinking.textContent = `⚠️ Ollama offline. Run: ollama serve\n\n${err.message}`;
+      thinking.textContent = `⚠️ Ollama offline.\n\nRun in Terminal:\npkill ollama && OLLAMA_ORIGINS="*" ollama serve`;
     }
 
     sendBtn.disabled = false;
@@ -269,18 +427,20 @@
   }
 
   input.addEventListener('keydown', e => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      send();
-    }
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
   });
-
   input.addEventListener('input', () => {
     input.style.height = 'auto';
     input.style.height = input.scrollHeight + 'px';
   });
-
   sendBtn.addEventListener('click', send);
+
+  // Load saved system prompt
+  const savedSys = localStorage.getItem('rwctc-system-prompt');
+  if (savedSys) sysProm.value = savedSys;
+  sysProm.addEventListener('input', () => {
+    localStorage.setItem('rwctc-system-prompt', sysProm.value);
+  });
 </script>
 </body>
 </html>
